@@ -1,0 +1,7 @@
+cd /openssl
+git pull
+cd /nginx
+git pull
+auto/configure           --with-openssl=/openssl         --with-openssl-opt="enable-ec_nistp_64_gcc_128"      --with-compat  --with-file-aio  --with-http_v3_module   --with-google_perftools_module   --with-http_addition_module  --with-http_xslt_module=dynamic  --with-http_image_filter_module=dynamic     --with-http_flv_module        --with-http_mp4_module  --with-stream_ssl_preread_module   --with-stream=dynamic        --with-stream_geoip_module=dynamic    --with-cpp_test_module    --with-compat    --with-libatomic    --with-pcre-jit  --with-select_module  --with-poll_module 	     --with-debug 	     --with-http_ssl_module 	     --with-http_stub_status_module                 	     --with-http_realip_module                      --with-mail	     --with-http_auth_request_module                	     --with-http_v2_module  	     --with-http_dav_module 	     --with-http_slice_module	     --with-threads   	     --with-http_addition_module --with-http_gunzip_module                      	     --with-http_gzip_static_module                      --with-http_sub_module 	     --with-pcre      --add-module=/headers-more-nginx-module-0.39
+make -j1
+make install
