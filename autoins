@@ -1,0 +1,78 @@
+# OpenBSD 自动安装配置文件
+# 适用于 KVM/VirtIO VPS 环境
+
+# 1. 安装源
+installurl=https://cdn.openbsd.org/pub/OpenBSD
+
+# 2. 键盘布局
+keyboard=us
+
+# 3. 系统标识
+hostname=openbsd
+
+# 4. 网络配置 - 静态IP
+# 网卡: vio0 (VirtIO), IP: 10.0.127.2/24, 网关: 10.0.127.1
+if=vio0
+ip=10.0.127.2
+netmask=255.255.255.0
+gateway=10.0.127.1
+dns1=8.8.8.8
+dns2=1.1.1.1
+# 不启用 IPv6 自动配置
+ipv6=no
+
+# 5. root 密码 (明文: 1)
+rootpass=$y$j9T$3iJ8TqMy1lZVEmMosmacB.$aeiJOgsMO6SyZg1eNYF1yqXT8brdwnAnplFa6rjfOx1:20516:0:99999:7:::
+
+# 6. 磁盘分区 - 使用整个磁盘
+disk=auto
+# 自动分区方案，使用 softdep,noatime 优化
+partition=auto
+# 文件系统挂载选项: softdep 提升性能，noatime 减少写操作，fsck 自动修复
+fstab_options=rw,softdep,noatime
+
+# 7. 安装组件 - 最小化服务器配置
+# 不安装 X Window 和游戏
+sets=-game*
+sets=-x*
+# 安装基础系统
+sets=*
+# 不询问确认
+setsdone=done
+
+# 8. 时区
+timezone=Asia/Hong_Kong
+
+# 9. SSH 配置
+# 允许 root 登录，默认端口 22
+sshd=YES
+ssh_rootlogin=yes
+ssh_port=22
+
+# 10. 不创建普通用户
+useradd=
+
+# 11. 首次启动后自动安装软件包
+# 使用 pkg_add 安装 bash nano wget curl git
+pkgpath=https://cdn.openbsd.org/pub/OpenBSD/%c/packages/%a/
+# 安装完成后执行的脚本
+start_pkg_add=bash nano wget curl git
+
+# 12. 启动配置 - 优化 fsck 行为
+# 启用 soft updates，减少脏盘标记问题
+cat >> /etc/fstab << 'EOF'
+/dev/sd0a / ffs rw,softdep,noatime 1 1
+/dev/sd0b /usr ffs rw,softdep,noatime 1 2
+/dev/sd0d /var ffs rw,softdep,noatime 1 2
+/dev/sd0e /tmp ffs rw,softdep,noatime 1 2
+/dev/sd0f /home ffs rw,softdep,noatime 1 2
+EOF
+
+# 13. 禁用强制 fsck 提示，自动修复
+cat >> /etc/rc.conf.local << 'EOF'
+fsck_yes=YES
+EOF
+
+# 14. 完成安装后重启
+reboot
+
