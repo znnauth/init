@@ -73,6 +73,31 @@ cat >> /etc/rc.conf.local << 'EOF'
 fsck_yes=YES
 EOF
 
-# 14. 完成安装后重启
+# OpenBSD 自动安装配置文件 - 添加串口控制台支持
+
+# ... 原有配置 ...
+
+# 串口控制台配置 - 确保通过 com0 (ttyS0) 可访问
+cat >> /etc/ttys << 'EOF'
+tty00   "/usr/libexec/getty std.115200"   vt220   on  secure
+EOF
+
+cat >> /etc/boot.conf << 'EOF'
+set tty com0
+stty com0 115200
+EOF
+
+# 启用串口登录
+cat >> /etc/securetty << 'EOF'
+tty00
+EOF
+
+# 确保 SSH 在启动时运行并监听所有接口
+cat >> /etc/rc.conf.local << 'EOF'
+sshd_flags=""
+EOF
+
+# 配置完成后重启
 reboot
+
 
